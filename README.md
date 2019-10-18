@@ -37,6 +37,13 @@ DB setup:
 
 ```
 node_modules/.bin/knex --knexfile ./db/knexfile.js migrate:latest
+node_modules/.bin/knex --knexfile ./db/knexfile.js seed:run
+```
+
+Down migrate:
+
+```
+node_modules/.bin/knex --knexfile ./db/knexfile.js migrate:rollback
 ```
 
 

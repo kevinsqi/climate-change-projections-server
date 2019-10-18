@@ -2,7 +2,7 @@
 exports.up = function(knex) {
   return knex.schema.raw(`
     CREATE TABLE temperatures_cmip5 (
-      id integer PRIMARY KEY,
+      id SERIAL PRIMARY KEY,
       place_name text NOT NULL,
       lat float8 NOT NULL,
       lon float8 NOT NULL,
@@ -12,10 +12,12 @@ exports.up = function(knex) {
       model_60_warming float8 NOT NULL,
       model_85_warming float8 NOT NULL,
       geography geography
-    );
+    )
   `);
 };
 
 exports.down = function(knex) {
-  console.warn('Down migration not implemented');  
+  return knex.schema.raw(`
+    DROP TABLE temperatures_cmip5;
+  `);
 };
