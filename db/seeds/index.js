@@ -5,8 +5,9 @@ const path = require('path');
 exports.seed = function(knex) {
   const csv = fs.readFileSync(path.join(__dirname, '../../data/cmip5.csv'));
   const records = parse(csv, { columns: true });
+  console.log("CSV parsed, records:", records.length);
+
   const insertions = records.map((record) => {
-    console.log(record);
     return knex.raw(
       `
         INSERT INTO temperatures_cmip5 (
