@@ -7,6 +7,8 @@ exports.seed = function(knex) {
   const records = parse(csv, { columns: true });
   console.log("CSV parsed, records:", records.length);
 
+  // Geography column:
+  // https://stackoverflow.com/questions/8150721/which-data-type-for-latitude-and-longitude
   const insertions = records.map((record) => {
     return knex.raw(
       `
@@ -18,7 +20,8 @@ exports.seed = function(knex) {
           model_26_warming,
           model_45_warming,
           model_60_warming,
-          model_85_warming
+          model_85_warming,
+          geography
         )
         VALUES (
           :place_name,
@@ -28,7 +31,8 @@ exports.seed = function(knex) {
           :model_26_warming,
           :model_45_warming,
           :model_60_warming,
-          :model_85_warming
+          :model_85_warming,
+          'SRID=4326;POINT(${record.lon_label} ${record.lat_label})'
         )
       `,
       record
