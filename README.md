@@ -43,6 +43,7 @@ node_modules/.bin/knex --knexfile ./db/knexfile.js seed:run
 ## Running the app
 
 ```
+yarn install
 yarn start
 ```
 

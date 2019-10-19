@@ -1,8 +1,12 @@
 require('dotenv').config();
 const axios = require('axios');
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
 const knex = require('./db/knex');
+
+// Logging
+app.use(morgan('combined'));
 
 // Parse incoming request JSON
 app.use(express.json());
@@ -11,6 +15,9 @@ app.use(express.urlencoded({ extended: false }));
 // Routes
 const router = express.Router();
 router.get('/location', (req, res) => {
+  if (!req.query.address) {
+    return res.status(400).json({ error: 'MISSING_ADDRESS' });
+  }
   axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
     params: {
       address: req.query.address,
@@ -18,7 +25,7 @@ router.get('/location', (req, res) => {
     }
   }).then((response) => {
     if (response.data.results.length === 0) {
-      return res.status(404);
+      return res.status(404).json({ error: 'NO_GEOCODING_RESULTS' });
     }
     const { lat, lng } = response.data.results[0].geometry.location;
     // TODO: fix sql injection, '?' and bindings isn't working with <->?
@@ -31,13 +38,15 @@ router.get('/location', (req, res) => {
     );
   }).then((result) => {
     return res.status(200).json({
-      result: result.rows[0],
+      temperature: result.rows[0],
     });
+  }).catch((error) => {
+    console.error(error);
   });
 });
 app.use('/api', router);
 
 
 // Listen
-const port = 3000;
+const port = process.env.PORT;
 app.listen(port, () => console.log(`Server listening on port ${port}`));
