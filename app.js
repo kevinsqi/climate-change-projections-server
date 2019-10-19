@@ -18,11 +18,14 @@ router.get('/location', (req, res) => {
     });
   }
 
-  knex.raw(`
-    SELECT * FROM temperatures_cmip5
-    ORDER BY geography <-> 'SRID=4326;POINT(-122.401780 37.797650)'
-    LIMIT 1
-  `).then((result) => {
+  // TODO: fix sql injection, '?' and bindings isn't working with <->?
+  knex.raw(
+    `
+      SELECT * FROM temperatures_cmip5
+      ORDER BY geography <-> 'SRID=4326;POINT(${lon} ${lat})'
+      LIMIT 1
+    `
+  ).then((result) => {
     return res.status(200).json({
       query: {
         lat: lat,
