@@ -1,6 +1,18 @@
 # Climate Change Projections - Server
 
+Backend server for https://github.com/kevinsqi/climate-change-projections
+
 ## Setup
+
+First, you'll need to [install Homebrew](https://brew.sh/). Then:
+
+```
+brew install node
+brew install postgresql
+brew install postgis
+```
+
+Warning: installing these may take a while.
 
 ### Geocoding API
 
@@ -13,11 +25,6 @@ GOOGLE_MAPS_PLATFORM_KEY=<your api key>
 ```
 
 ### Database
-
-```
-brew install postgresql
-brew install postgis
-```
 
 Create user and DB:
 
