@@ -1,6 +1,7 @@
+require('dotenv').config();
+const axios = require('axios');
 const express = require('express');
 const app = express();
-
 const knex = require('./db/knex');
 
 // Parse incoming request JSON
@@ -10,27 +11,26 @@ app.use(express.urlencoded({ extended: false }));
 // Routes
 const router = express.Router();
 router.get('/location', (req, res) => {
-  const { lat, lon } = req.query;
-
-  if (lat == null || lon == null) {
-    return res.status(400).json({
-      error: 'LAT_AND_LON_REQUIRED',
-    });
-  }
-
-  // TODO: fix sql injection, '?' and bindings isn't working with <->?
-  knex.raw(
-    `
-      SELECT * FROM temperatures_cmip5
-      ORDER BY geography <-> 'SRID=4326;POINT(${lon} ${lat})'
-      LIMIT 1
-    `
-  ).then((result) => {
+  axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+    params: {
+      address: req.query.address,
+      key: process.env.GOOGLE_MAPS_PLATFORM_KEY,
+    }
+  }).then((response) => {
+    if (response.data.results.length === 0) {
+      return res.status(404);
+    }
+    const { lat, lng } = response.data.results[0].geometry.location;
+    // TODO: fix sql injection, '?' and bindings isn't working with <->?
+    return knex.raw(
+      `
+        SELECT * FROM temperatures_cmip5
+        ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
+        LIMIT 1
+      `
+    );
+  }).then((result) => {
     return res.status(200).json({
-      query: {
-        lat: lat,
-        lon: lon,
-      },
       result: result.rows[0],
     });
   });
