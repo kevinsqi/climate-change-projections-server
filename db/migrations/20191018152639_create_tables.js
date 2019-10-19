@@ -1,4 +1,3 @@
-
 exports.up = function(knex) {
   return knex.schema.raw(`
     CREATE TABLE temperatures_cmip5 (

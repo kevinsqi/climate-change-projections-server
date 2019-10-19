@@ -5,7 +5,7 @@ const path = require('path');
 exports.seed = function(knex) {
   const csv = fs.readFileSync(path.join(__dirname, '../../data/cmip5.csv'));
   const records = parse(csv, { columns: true });
-  console.log("CSV parsed, records:", records.length);
+  console.log('CSV parsed, records:', records.length);
 
   // Geography column:
   // https://stackoverflow.com/questions/8150721/which-data-type-for-latitude-and-longitude
@@ -35,7 +35,7 @@ exports.seed = function(knex) {
           'SRID=4326;POINT(${record.lon_label} ${record.lat_label})'
         )
       `,
-      record
+      record,
     );
   });
   return Promise.all(insertions);

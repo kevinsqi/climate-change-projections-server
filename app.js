@@ -18,34 +18,37 @@ router.get('/location', (req, res) => {
   if (!req.query.address) {
     return res.status(400).json({ error: 'MISSING_ADDRESS' });
   }
-  axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
-    params: {
-      address: req.query.address,
-      key: process.env.GOOGLE_MAPS_PLATFORM_KEY,
-    }
-  }).then((response) => {
-    if (response.data.results.length === 0) {
-      return res.status(404).json({ error: 'NO_GEOCODING_RESULTS' });
-    }
-    const { lat, lng } = response.data.results[0].geometry.location;
-    // TODO: fix sql injection, '?' and bindings isn't working with <->?
-    return knex.raw(
-      `
+  axios
+    .get('https://maps.googleapis.com/maps/api/geocode/json', {
+      params: {
+        address: req.query.address,
+        key: process.env.GOOGLE_MAPS_PLATFORM_KEY,
+      },
+    })
+    .then((response) => {
+      if (response.data.results.length === 0) {
+        return res.status(404).json({ error: 'NO_GEOCODING_RESULTS' });
+      }
+      const { lat, lng } = response.data.results[0].geometry.location;
+      // TODO: fix sql injection, '?' and bindings isn't working with <->?
+      return knex.raw(
+        `
         SELECT * FROM temperatures_cmip5
         ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
         LIMIT 1
-      `
-    );
-  }).then((result) => {
-    return res.status(200).json({
-      temperature: result.rows[0],
+      `,
+      );
+    })
+    .then((result) => {
+      return res.status(200).json({
+        temperature: result.rows[0],
+      });
+    })
+    .catch((error) => {
+      console.error(error);
     });
-  }).catch((error) => {
-    console.error(error);
-  });
 });
 app.use('/api', router);
-
 
 // Listen
 const port = process.env.PORT;

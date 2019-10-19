@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "PORT=3001 nodemon app.js",
-    "db:shell": "psql postgres://climate_change_projections_user@localhost/climate_change_projections"
+    "db:shell": "psql postgres://climate_change_projections_user@localhost/climate_change_projections",
+    "format": "prettier --write '*.js' '**/*.js'",
+    "start": "PORT=3001 nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +20,7 @@
     "pg": "^7.12.1"
   },
   "devDependencies": {
-    "nodemon": "^1.19.4"
+    "nodemon": "^1.19.4",
+    "prettier": "^1.18.2"
   }
 }
