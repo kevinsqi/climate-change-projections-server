@@ -31,17 +31,31 @@ router.get('/location', (req, res) => {
       }
       const { lat, lng } = response.data.results[0].geometry.location;
       // TODO: fix sql injection, '?' and bindings isn't working with <->?
-      return knex.raw(
-        `
+      return Promise.all([
+        knex.raw(
+          `
         SELECT * FROM temperatures_cmip5
         ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
         LIMIT 1
       `,
-      );
+        ),
+        knex.raw(
+          `
+        SELECT * FROM noaa_projections
+        WHERE ST_Distance(
+          ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
+          ST_Transform(noaa_projections.geography::geometry, 3857)
+        ) < 50000
+        ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
+        LIMIT 1
+        `,
+        ),
+      ]);
     })
-    .then((result) => {
+    .then(([temperatureResult, noaaResult]) => {
       return res.status(200).json({
-        temperature: result.rows[0],
+        temperature: temperatureResult.rows[0],
+        noaa: noaaResult.rows[0],
       });
     })
     .catch((error) => {

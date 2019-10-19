@@ -1,22 +1,41 @@
 exports.up = function(knex) {
-  return knex.schema.raw(`
-    CREATE TABLE temperatures_cmip5 (
-      id SERIAL PRIMARY KEY,
-      place_name text NOT NULL,
-      lat float8 NOT NULL,
-      lon float8 NOT NULL,
-      observed_warming float8 NOT NULL,
-      model_26_warming float8 NOT NULL,
-      model_45_warming float8 NOT NULL,
-      model_60_warming float8 NOT NULL,
-      model_85_warming float8 NOT NULL,
-      geography geography
-    )
-  `);
+  return Promise.all([
+    knex.schema.raw(`
+      CREATE TABLE temperatures_cmip5 (
+        id SERIAL PRIMARY KEY,
+        place_name text NOT NULL,
+        lat float8 NOT NULL,
+        lon float8 NOT NULL,
+        geography geography NOT NULL,
+        observed_warming float8 NOT NULL,
+        model_26_warming float8 NOT NULL,
+        model_45_warming float8 NOT NULL,
+        model_60_warming float8 NOT NULL,
+        model_85_warming float8 NOT NULL
+      )
+    `),
+    knex.schema.raw(`
+      CREATE TABLE noaa_projections (
+        id SERIAL PRIMARY KEY,
+        place_name text NOT NULL,
+        attribute text NOT NULL,
+        lat float8 NOT NULL,
+        lon float8 NOT NULL,
+        geography geography NOT NULL,
+        rcp45_weighted_mean float8 NOT NULL,
+        rcp45_min float8 NOT NULL,
+        rcp45_max float8 NOT NULL,
+        rcp85_weighted_mean float8 NOT NULL,
+        rcp85_min float8 NOT NULL,
+        rcp85_max float8 NOT NULL
+      )
+    `),
+  ]);
 };
 
 exports.down = function(knex) {
-  return knex.schema.raw(`
-    DROP TABLE temperatures_cmip5;
-  `);
+  return Promise.all([
+    knex.schema.raw(`DROP TABLE temperatures_cmip5`),
+    knex.schema.raw(`DROP TABLE temperatures_cmip5`),
+  ]);
 };
