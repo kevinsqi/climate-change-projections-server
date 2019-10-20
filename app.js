@@ -48,7 +48,7 @@ router.get('/location', (req, res) => {
         knex.raw(
           `
             SELECT *, (
-              SELECT rcp45_max FROM noaa_projections
+              SELECT rcp45_weighted_mean FROM noaa_projections
               WHERE ST_Distance(
                 ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
                 ST_Transform(noaa_projections.geography::geometry, 3857)
@@ -57,9 +57,9 @@ router.get('/location', (req, res) => {
               AND year = 2019
               ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
               LIMIT 1
-            ) as rcp45_max_2019,
+            ) as rcp45_weighted_mean_2019,
             (
-              SELECT rcp85_max FROM noaa_projections
+              SELECT rcp85_weighted_mean FROM noaa_projections
               WHERE ST_Distance(
                 ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
                 ST_Transform(noaa_projections.geography::geometry, 3857)
@@ -68,7 +68,7 @@ router.get('/location', (req, res) => {
               AND year = 2019
               ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
               LIMIT 1
-            ) as rcp85_max_2019 
+            ) as rcp85_weighted_mean_2019
             FROM noaa_projections
             WHERE ST_Distance(
               ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
@@ -84,7 +84,7 @@ router.get('/location', (req, res) => {
         knex.raw(
           `
             SELECT *, (
-              SELECT rcp45_max FROM noaa_projections
+              SELECT rcp45_weighted_mean FROM noaa_projections
               WHERE ST_Distance(
                 ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
                 ST_Transform(noaa_projections.geography::geometry, 3857)
@@ -93,9 +93,9 @@ router.get('/location', (req, res) => {
               AND year = 2019
               ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
               LIMIT 1
-            ) as rcp45_max_2019,
+            ) as rcp45_weighted_mean_2019,
             (
-              SELECT rcp85_max FROM noaa_projections
+              SELECT rcp85_weighted_mean FROM noaa_projections
               WHERE ST_Distance(
                 ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
                 ST_Transform(noaa_projections.geography::geometry, 3857)
@@ -104,7 +104,7 @@ router.get('/location', (req, res) => {
               AND year = 2019
               ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
               LIMIT 1
-            ) as rcp85_max_2019 
+            ) as rcp85_weighted_mean_2019 
             FROM noaa_projections
             WHERE ST_Distance(
               ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
