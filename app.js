@@ -76,7 +76,7 @@ router.get('/location', (req, res) => {
       ]);
     })
     .then(([geoResult, ...dbResults]) => {
-      const results = dbResults.map((result) => result.rows[0]);
+      const results = dbResults.map((result) => result.rows[0]).filter((result) => result);
       return res.status(200).json({
         geo: geoResult,
         results,
