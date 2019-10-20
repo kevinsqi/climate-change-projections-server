@@ -75,7 +75,7 @@ Clear seed data:
 psql -U climate_change_projections_user -d climate_change_projections -c 'DELETE FROM temperatures_cmip5; DELETE FROM noaa_projections;'
 ```
 
-Rollback migration:Down migrate:
+Rollback migration:
 
 ```
 node_modules/.bin/knex --knexfile ./db/knexfile.js migrate:rollback
