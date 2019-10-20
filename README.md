@@ -72,7 +72,7 @@ node_modules/.bin/knex --knexfile ./db/knexfile.js migrate:make [MIGRATION_NAME]
 Reset seed data:
 
 ```
-psql -U climate_change_projections_user -d climate_change_projections -c 'DELETE FROM temperatures_cmip5; DELETE FROM noaa_projections;'
+psql -U climate_change_projections_user -d climate_change_projections -c 'DELETE FROM temperatures_cmip5; DELETE FROM noaa_projections; DELETE FROM climate_central_sea_levels;'
 node_modules/.bin/knex --knexfile ./db/knexfile.js seed:run
 ```
 

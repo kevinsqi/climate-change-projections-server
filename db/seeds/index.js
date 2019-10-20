@@ -155,9 +155,73 @@ function load_noaa_climate_explorer(knex) {
     .flat();
 }
 
+function load_climate_central_sea_levels(knex) {
+  const files = [
+    {
+      attribute: 'coastal_flooding_single_year_5ft',
+      place_name: 'New York, NY',
+      lat: 40.73061,
+      lon: -73.935242,
+      records: [
+        // https://riskfinder.climatecentral.org/state/new-york.us?comparisonType=county&forecastName=Single-year&forecastType=AR5_RCP45_p50&level=5&unit=ft&zillowPlaceType=county
+        { year: 2040, rcp26: 0.05, rcp45: 0.05, rcp85: 0.05 },
+        { year: 2060, rcp26: 0.07, rcp45: 0.08, rcp85: 0.09 },
+        { year: 2080, rcp26: 0.11, rcp45: 0.13, rcp85: 0.21 },
+        { year: 2100, rcp26: 0.17, rcp45: 0.24, rcp85: 0.59 },
+      ],
+    },
+  ];
+
+  return files
+    .map((file) => {
+      return file.records.map((record) => {
+        const fullRecord = {
+          attribute: file.attribute,
+          place_name: file.place_name,
+          // TODO: automate this with google geolocation queries
+          lat: file.lat,
+          lon: file.lon,
+          year: record.year,
+          rcp26: record.rcp26,
+          rcp45: record.rcp45,
+          rcp85: record.rcp85,
+        };
+        return knex.raw(
+          `
+        INSERT INTO climate_central_sea_levels (
+          place_name,
+          attribute,
+          year,
+          lat,
+          lon,
+          geography,
+          rcp26,
+          rcp45,
+          rcp85
+        )
+        VALUES (
+          :place_name,
+          :attribute,
+          :year,
+          :lat,
+          :lon,
+          'SRID=4326;POINT(${fullRecord.lon} ${fullRecord.lat})',
+          :rcp26,
+          :rcp45,
+          :rcp85
+        )
+        `,
+          fullRecord,
+        );
+      });
+    })
+    .flat();
+}
+
 exports.seed = function(knex) {
   const insertions = [];
   insertions.push(...load_cmip5(knex));
   insertions.push(...load_noaa_climate_explorer(knex));
+  insertions.push(...load_climate_central_sea_levels(knex));
   return Promise.all(insertions);
 };

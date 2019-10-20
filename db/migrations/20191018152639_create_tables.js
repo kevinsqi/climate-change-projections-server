@@ -34,6 +34,20 @@ exports.up = function(knex) {
         rcp85_max float8 NOT NULL
       )
     `),
+    knex.schema.raw(`
+      CREATE TABLE climate_central_sea_levels (
+        id SERIAL PRIMARY KEY,
+        place_name text NOT NULL,
+        attribute text NOT NULL,
+        year integer NOT NULL,
+        lat float8 NOT NULL,
+        lon float8 NOT NULL,
+        geography geography NOT NULL,
+        rcp26 float8 NOT NULL,
+        rcp45 float8 NOT NULL,
+        rcp85 float8 NOT NULL
+      )
+    `),
   ]);
 };
 
@@ -41,5 +55,6 @@ exports.down = function(knex) {
   return Promise.all([
     knex.schema.raw(`DROP TABLE temperatures_cmip5`),
     knex.schema.raw(`DROP TABLE noaa_projections`),
+    knex.schema.raw(`DROP TABLE climate_central_sea_levels`),
   ]);
 };

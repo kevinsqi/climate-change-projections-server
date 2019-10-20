@@ -117,6 +117,19 @@ router.get('/location', (req, res) => {
           `,
           [req.query.year],
         ),
+        knex.raw(
+          `
+            SELECT * FROM climate_central_sea_levels
+            WHERE ST_Distance(
+              ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
+              ST_Transform(climate_central_sea_levels.geography::geometry, 3857)
+            ) < 50000
+            AND year = ?
+            ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
+            LIMIT 1
+          `,
+          [req.query.year],
+        ),
       ]);
     })
     .then(([geoResult, ...dbResults]) => {
