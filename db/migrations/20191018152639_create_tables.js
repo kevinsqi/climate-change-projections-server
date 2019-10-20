@@ -4,6 +4,9 @@ exports.up = function(knex) {
       CREATE TABLE temperatures_cmip5 (
         id SERIAL PRIMARY KEY,
         place_name text NOT NULL,
+        attribute text NOT NULL,
+        year_start integer NOT NULL,
+        year_end integer NOT NULL,
         lat float8 NOT NULL,
         lon float8 NOT NULL,
         geography geography NOT NULL,
@@ -19,6 +22,7 @@ exports.up = function(knex) {
         id SERIAL PRIMARY KEY,
         place_name text NOT NULL,
         attribute text NOT NULL,
+        year integer NOT NULL,
         lat float8 NOT NULL,
         lon float8 NOT NULL,
         geography geography NOT NULL,
@@ -36,6 +40,6 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return Promise.all([
     knex.schema.raw(`DROP TABLE temperatures_cmip5`),
-    knex.schema.raw(`DROP TABLE temperatures_cmip5`),
+    knex.schema.raw(`DROP TABLE noaa_projections`),
   ]);
 };

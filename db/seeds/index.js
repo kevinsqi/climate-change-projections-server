@@ -10,10 +10,19 @@ function load_cmip5(knex) {
   // Geography column:
   // https://stackoverflow.com/questions/8150721/which-data-type-for-latitude-and-longitude
   return records.map((record) => {
+    const fullRecord = {
+      attribute: 'temperature_increase',
+      year_start: 2080,
+      year_end: 2100,
+      ...record,
+    };
     return knex.raw(
       `
         INSERT INTO temperatures_cmip5 (
           place_name,
+          attribute,
+          year_start,
+          year_end,
           lat,
           lon,
           observed_warming,
@@ -25,6 +34,9 @@ function load_cmip5(knex) {
         )
         VALUES (
           :place_name,
+          :attribute,
+          :year_start,
+          :year_end,
           :lat_label,
           :lon_label,
           :obs_warming,
@@ -35,67 +47,91 @@ function load_cmip5(knex) {
           'SRID=4326;POINT(${record.lon_label} ${record.lat_label})'
         )
       `,
-      record,
+      fullRecord,
     );
   });
 }
 
 function load_noaa_climate_explorer(knex) {
-  const csv = fs.readFileSync(
-    path.join(__dirname, '../../data/noaa_climate_explorer/san_francisco_num_days_above_100f.csv'),
-  );
-  const records = parse(csv, { columns: true });
-  console.log('CSV parsed, records:', records.length);
-
-  return records.map((record) => {
-    const { rcp45_weighted_mean, rcp45_min, rcp45_max, rcp85_min, rcp85_max } = record;
-
-    const fullRecord = {
+  const files = [
+    {
       attribute: 'num_days_above_100f',
       place_name: 'San Francisco, CA',
-      // TODO: automate this with google geolocation queries
       lat: 37.773972,
       lon: -122.431297,
-      rcp45_weighted_mean,
-      rcp45_min,
-      rcp45_max,
-      rcp85_weighted_mean: record['rcp85_weighted mean'],
-      rcp85_min,
-      rcp85_max,
-    };
+      path: 'san_francisco_num_days_above_100f.csv',
+    },
+    {
+      attribute: 'num_dry_days',
+      place_name: 'San Francisco, CA',
+      lat: 37.773972,
+      lon: -122.431297,
+      path: 'san_francisco_num_days_precipitation_0in.csv',
+    },
+  ];
 
-    return knex.raw(
-      `
-        INSERT INTO noaa_projections (
-          place_name,
-          attribute,
-          lat,
-          lon,
-          geography,
+  return files
+    .map((file) => {
+      const csv = fs.readFileSync(
+        path.join(__dirname, '../../data/noaa_climate_explorer', file.path),
+      );
+      const records = parse(csv, { columns: true });
+      console.log(`${file.attribute} ${file.place_name} CSV parsed, records:`, records.length);
+
+      return records.map((record) => {
+        const { year, rcp45_weighted_mean, rcp45_min, rcp45_max, rcp85_min, rcp85_max } = record;
+
+        const fullRecord = {
+          attribute: file.attribute,
+          place_name: file.place_name,
+          // TODO: automate this with google geolocation queries
+          lat: file.lat,
+          lon: file.lon,
+          year,
           rcp45_weighted_mean,
           rcp45_min,
           rcp45_max,
-          rcp85_weighted_mean,
+          rcp85_weighted_mean: record['rcp85_weighted mean'],
           rcp85_min,
-          rcp85_max
-        )
-        VALUES (
-          :place_name,
-          :attribute,
-          :lat,
-          :lon,
-          'SRID=4326;POINT(${fullRecord.lon} ${fullRecord.lat})',
-          :rcp45_weighted_mean,
-          :rcp45_min,
-          :rcp45_max,
-          :rcp85_weighted_mean,
-          :rcp85_min,
-          :rcp85_max
-        )
-      `,
-      fullRecord,
-    );
-  });
+          rcp85_max,
+        };
+
+        return knex.raw(
+          `
+          INSERT INTO noaa_projections (
+            place_name,
+            attribute,
+            year,
+            lat,
+            lon,
+            geography,
+            rcp45_weighted_mean,
+            rcp45_min,
+            rcp45_max,
+            rcp85_weighted_mean,
+            rcp85_min,
+            rcp85_max
+          )
+          VALUES (
+            :place_name,
+            :attribute,
+            :year,
+            :lat,
+            :lon,
+            'SRID=4326;POINT(${fullRecord.lon} ${fullRecord.lat})',
+            :rcp45_weighted_mean,
+            :rcp45_min,
+            :rcp45_max,
+            :rcp85_weighted_mean,
+            :rcp85_min,
+            :rcp85_max
+          )
+        `,
+          fullRecord,
+        );
+      });
+    })
+    .flat();
 }
 
 exports.seed = function(knex) {
