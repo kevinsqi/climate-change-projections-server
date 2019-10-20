@@ -47,7 +47,29 @@ router.get('/location', (req, res) => {
         ),
         knex.raw(
           `
-            SELECT * FROM noaa_projections
+            SELECT *, (
+              SELECT rcp45_max FROM noaa_projections
+              WHERE ST_Distance(
+                ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
+                ST_Transform(noaa_projections.geography::geometry, 3857)
+              ) < 50000
+              AND attribute = 'num_days_above_100f'
+              AND year = 2019
+              ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
+              LIMIT 1
+            ) as rcp45_max_2019,
+            (
+              SELECT rcp85_max FROM noaa_projections
+              WHERE ST_Distance(
+                ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
+                ST_Transform(noaa_projections.geography::geometry, 3857)
+              ) < 50000
+              AND attribute = 'num_days_above_100f'
+              AND year = 2019
+              ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
+              LIMIT 1
+            ) as rcp85_max_2019 
+            FROM noaa_projections
             WHERE ST_Distance(
               ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
               ST_Transform(noaa_projections.geography::geometry, 3857)
@@ -61,7 +83,29 @@ router.get('/location', (req, res) => {
         ),
         knex.raw(
           `
-            SELECT * FROM noaa_projections
+            SELECT *, (
+              SELECT rcp45_max FROM noaa_projections
+              WHERE ST_Distance(
+                ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
+                ST_Transform(noaa_projections.geography::geometry, 3857)
+              ) < 50000
+              AND attribute = 'num_dry_days'
+              AND year = 2019
+              ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
+              LIMIT 1
+            ) as rcp45_max_2019,
+            (
+              SELECT rcp85_max FROM noaa_projections
+              WHERE ST_Distance(
+                ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
+                ST_Transform(noaa_projections.geography::geometry, 3857)
+              ) < 50000
+              AND attribute = 'num_dry_days'
+              AND year = 2019
+              ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
+              LIMIT 1
+            ) as rcp85_max_2019 
+            FROM noaa_projections
             WHERE ST_Distance(
               ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
               ST_Transform(noaa_projections.geography::geometry, 3857)
