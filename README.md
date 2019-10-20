@@ -76,8 +76,9 @@ psql -U climate_change_projections_user -d climate_change_projections -c 'DELETE
 node_modules/.bin/knex --knexfile ./db/knexfile.js seed:run
 ```
 
-Rollback migration:
+Rollback and rerun migration:
 
 ```
 node_modules/.bin/knex --knexfile ./db/knexfile.js migrate:rollback
+node_modules/.bin/knex --knexfile ./db/knexfile.js migrate:latest
 ```

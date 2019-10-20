@@ -155,6 +155,57 @@ function load_noaa_climate_explorer(knex) {
     .flat();
 }
 
+function load_noaa_observations(knex) {
+  const filePath = 'noaa_observations_avg_1950_to_2013.csv';
+  const csv = fs.readFileSync(path.join(__dirname, '../../data', filePath));
+
+  const records = parse(csv, { columns: true });
+  console.log(`CSV parsed, records:`, records.length);
+  return records.map((record) => {
+    const fullRecord = {
+      attribute: 'noaa_observations_historical_average',
+      place_name: record.CityName,
+      lat: record.Lat,
+      lon: record.Lon,
+      year_start: 1950,
+      year_end: 2013,
+      avg_temp_max_f: record.avgTmaxF,
+      num_days_above_100f: record.days_gt_100,
+      num_dry_days: record.dry_days,
+    };
+
+    return knex.raw(
+      `
+      INSERT INTO noaa_observations (
+        attribute,
+        place_name,
+        lat,
+        lon,
+        geography,
+        year_start,
+        year_end,
+        avg_temp_max_f,
+        num_days_above_100f,
+        num_dry_days
+      )
+      VALUES (
+        :attribute,
+        :place_name,
+        :lat,
+        :lon,
+        'SRID=4326;POINT(${fullRecord.lon} ${fullRecord.lat})',
+        :year_start,
+        :year_end,
+        :avg_temp_max_f,
+        :num_days_above_100f,
+        :num_dry_days
+      )
+    `,
+      fullRecord,
+    );
+  });
+}
+
 function load_climate_central_sea_levels(knex) {
   const files = [
     {
@@ -234,6 +285,7 @@ exports.seed = function(knex) {
   const insertions = [];
   insertions.push(...load_cmip5(knex));
   insertions.push(...load_noaa_climate_explorer(knex));
+  insertions.push(...load_noaa_observations(knex));
   insertions.push(...load_climate_central_sea_levels(knex));
   return Promise.all(insertions);
 };

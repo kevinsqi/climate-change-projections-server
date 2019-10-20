@@ -48,6 +48,21 @@ exports.up = function(knex) {
         rcp85 float8 NOT NULL
       )
     `),
+    knex.schema.raw(`
+      CREATE TABLE noaa_observations (
+        id SERIAL PRIMARY KEY,
+        place_name text NOT NULL,
+        attribute text NOT NULL,
+        year_start integer NOT NULL,
+        year_end integer NOT NULL,
+        lat float8 NOT NULL,
+        lon float8 NOT NULL,
+        geography geography NOT NULL,
+        avg_temp_max_f float8 NOT NULL,
+        num_days_above_100f float8 NOT NULL,
+        num_dry_days float8 NOT NULL
+      )
+    `),
   ]);
 };
 
@@ -56,5 +71,6 @@ exports.down = function(knex) {
     knex.schema.raw(`DROP TABLE temperatures_cmip5`),
     knex.schema.raw(`DROP TABLE noaa_projections`),
     knex.schema.raw(`DROP TABLE climate_central_sea_levels`),
+    // TODO: add noaa_observations
   ]);
 };

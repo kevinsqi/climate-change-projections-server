@@ -48,27 +48,14 @@ router.get('/location', (req, res) => {
         knex.raw(
           `
             SELECT *, (
-              SELECT rcp45_weighted_mean FROM noaa_projections
+              SELECT num_days_above_100f FROM noaa_observations
               WHERE ST_Distance(
                 ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
-                ST_Transform(noaa_projections.geography::geometry, 3857)
+                ST_Transform(noaa_observations.geography::geometry, 3857)
               ) < 50000
-              AND attribute = 'num_days_above_100f'
-              AND year = 2019
               ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
               LIMIT 1
-            ) as rcp45_weighted_mean_2019,
-            (
-              SELECT rcp85_weighted_mean FROM noaa_projections
-              WHERE ST_Distance(
-                ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
-                ST_Transform(noaa_projections.geography::geometry, 3857)
-              ) < 50000
-              AND attribute = 'num_days_above_100f'
-              AND year = 2019
-              ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
-              LIMIT 1
-            ) as rcp85_weighted_mean_2019
+            ) as historical_average
             FROM noaa_projections
             WHERE ST_Distance(
               ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
@@ -84,27 +71,14 @@ router.get('/location', (req, res) => {
         knex.raw(
           `
             SELECT *, (
-              SELECT rcp45_weighted_mean FROM noaa_projections
+              SELECT num_dry_days FROM noaa_observations
               WHERE ST_Distance(
                 ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
-                ST_Transform(noaa_projections.geography::geometry, 3857)
+                ST_Transform(noaa_observations.geography::geometry, 3857)
               ) < 50000
-              AND attribute = 'num_dry_days'
-              AND year = 2019
               ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
               LIMIT 1
-            ) as rcp45_weighted_mean_2019,
-            (
-              SELECT rcp85_weighted_mean FROM noaa_projections
-              WHERE ST_Distance(
-                ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
-                ST_Transform(noaa_projections.geography::geometry, 3857)
-              ) < 50000
-              AND attribute = 'num_dry_days'
-              AND year = 2019
-              ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
-              LIMIT 1
-            ) as rcp85_weighted_mean_2019 
+            ) as historical_average
             FROM noaa_projections
             WHERE ST_Distance(
               ST_Transform('SRID=4326;POINT(${lng} ${lat})'::geometry, 3857),
