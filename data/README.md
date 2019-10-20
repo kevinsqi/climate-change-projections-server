@@ -8,3 +8,7 @@
 
 * Use backing data for https://www.carbonbrief.org/mapped-how-every-part-of-the-world-has-warmed-and-could-continue-to-warm
 * CSV from their github repo: https://github.com/hausfath/warming_map/blob/master/gridcell_characteristics.csv
+
+Sea level data:
+
+* https://riskfinder.climatecentral.org
