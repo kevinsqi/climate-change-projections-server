@@ -39,7 +39,7 @@ router.get('/location', (req, res) => {
         knex.raw(
           `
             SELECT * FROM temperatures_cmip5
-            WHERE year_start >= ?
+            WHERE year_start <= ?
             ORDER BY geography <-> 'SRID=4326;POINT(${lng} ${lat})'
             LIMIT 1
           `,
