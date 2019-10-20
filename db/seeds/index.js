@@ -170,6 +170,18 @@ function load_climate_central_sea_levels(knex) {
         { year: 2100, rcp26: 0.17, rcp45: 0.24, rcp85: 0.59 },
       ],
     },
+    {
+      attribute: 'coastal_flooding_single_year_5ft',
+      place_name: 'San Francisco, CA',
+      lat: 37.773972,
+      lon: -122.431297,
+      records: [
+        // https://riskfinder.climatecentral.org/place/san-francisco.ca.us?comparisonType=place&forecastType=AR5_RCP26_p50&level=5&unit=ft&zillowPlaceType=place
+        { year: 2040, rcp26: 0.0, rcp45: 0.0, rcp85: 0.0 },
+        { year: 2060, rcp26: 0.0, rcp45: 0.0, rcp85: 0.01 },
+        { year: 2080, rcp26: 0.01, rcp45: 0.01, rcp85: 0.02 },
+      ],
+    },
   ];
 
   return files
