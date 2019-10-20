@@ -82,6 +82,13 @@ function load_noaa_climate_explorer(knex) {
       lon: -99.502914,
       path: 'laredo_tx_num_dry_days.csv',
     },
+    {
+      attribute: 'num_dry_days',
+      place_name: 'Idaho Falls, ID',
+      lat: 43.49165,
+      lon: -112.033966,
+      path: 'idaho_falls_num_dry_days.csv',
+    },
   ];
 
   return files
