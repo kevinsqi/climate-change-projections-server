@@ -66,7 +66,21 @@ function load_noaa_climate_explorer(knex) {
       place_name: 'San Francisco, CA',
       lat: 37.773972,
       lon: -122.431297,
-      path: 'san_francisco_num_days_precipitation_0in.csv',
+      path: 'san_francisco_num_dry_days.csv',
+    },
+    {
+      attribute: 'num_days_above_100f',
+      place_name: 'Laredo, TX',
+      lat: 27.506748,
+      lon: -99.502914,
+      path: 'laredo_tx_num_days_above_100f.csv',
+    },
+    {
+      attribute: 'num_dry_days',
+      place_name: 'Laredo, TX',
+      lat: 27.506748,
+      lon: -99.502914,
+      path: 'laredo_tx_num_dry_days.csv',
     },
   ];
 

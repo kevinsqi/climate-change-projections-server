@@ -69,10 +69,11 @@ New migration:
 node_modules/.bin/knex --knexfile ./db/knexfile.js migrate:make [MIGRATION_NAME]
 ```
 
-Clear seed data:
+Reset seed data:
 
 ```
 psql -U climate_change_projections_user -d climate_change_projections -c 'DELETE FROM temperatures_cmip5; DELETE FROM noaa_projections;'
+node_modules/.bin/knex --knexfile ./db/knexfile.js seed:run
 ```
 
 Rollback migration:
